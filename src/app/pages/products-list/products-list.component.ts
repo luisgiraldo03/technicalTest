@@ -5,7 +5,6 @@ import { catchError, switchMap } from 'rxjs';
 
 import { ProductService } from 'src/app/services/product.service';
 import { Product } from '../models/Product';
-import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-products-list',
@@ -38,7 +37,8 @@ export class ProductsListComponent implements OnInit {
 
   public getProducts() {
     this.productService.getProducts().subscribe((response: any) => {
-      this.products = response.slice(0, 5);
+      // this.products = response.slice(0, 5);
+      this.products = response;
       console.log(this.products);
     });
   }
@@ -71,7 +71,7 @@ export class ProductsListComponent implements OnInit {
 
   public openOptions(product: Product) {
     console.log(product);
-    this.productService.sendMessage(product);
+    // this.productService.sendMessage(product);
     this.router.navigate(['/register', product]);
     // if (this.clicked) {
     //   this.clicked = false;

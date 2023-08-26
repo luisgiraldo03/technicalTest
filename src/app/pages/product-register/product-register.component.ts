@@ -1,4 +1,9 @@
-import { Component, OnInit } from '@angular/core';
+import {
+  AfterContentInit,
+  AfterViewInit,
+  Component,
+  OnInit,
+} from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 
@@ -12,11 +17,10 @@ import { formatDate } from '@angular/common';
   templateUrl: './product-register.component.html',
   styleUrls: ['./product-register.component.scss'],
 })
-export class ProductRegisterComponent implements OnInit {
+export class ProductRegisterComponent implements OnInit, AfterViewInit {
   public forma!: FormGroup;
   public dateDisabled = true;
   public dateDefault: any;
-  public prueba = 'hola';
   public product!: Product;
   public isEditable: Boolean = false;
   subscription!: Subscription;
@@ -27,30 +31,42 @@ export class ProductRegisterComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute
   ) {
-    this.buildForm();
-    this.loadData();
-    // this.route.params.subscribe((product: any) => {
-    //   this.product = product;
-    //   this.isEditable = true;
-    //   console.log(this.product);
+    this.buildForm().then(() => {
+      this.route.params.subscribe((product: any) => {
+        if (Object.keys(product).length === 0) {
+          this.isEditable = false;
+        } else {
+          this.isEditable = true;
+        }
+        this.product = product;
+        console.log(this.product);
+        this.forma.get('date_revision')?.disable();
 
-    //   const d = new Date(this.product.date_release);
-    //   console.log(d);
+        const d = new Date(this.product.date_release);
+        console.log(d);
 
-    //   if (this.isEditable) {
-    //     this.forma.setValue({
-    //       id: this.product.id,
-    //       description: this.product.description,
-    //       date_release: '',
-    //       name: this.product.name,
-    //       logo: this.product.logo,
-    //       date_revision: '',
-    //     });
-    //   }
-    // });
+        if (this.isEditable) {
+          this.forma.get('id')?.disable();
+          this.forma.setValue({
+            id: this.product.id,
+            description: this.product.description,
+            date_release: new Date(this.product.date_release)
+              .toISOString()
+              .split('T')[0],
+            name: this.product.name,
+            logo: this.product.logo,
+            date_revision: new Date(this.product.date_revision)
+              .toISOString()
+              .split('T')[0],
+          });
+        }
+      });
+    });
   }
 
   ngOnInit() {}
+
+  ngAfterViewInit(): void {}
 
   get notValidId() {
     return this.forma.get('id')?.invalid && this.forma.get('id')?.touched;
@@ -79,34 +95,37 @@ export class ProductRegisterComponent implements OnInit {
   }
 
   public buildForm() {
-    this.forma = this.fb.group({
-      id: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(5),
-          Validators.maxLength(10),
+    return new Promise((resolve, reject) => {
+      this.forma = this.fb.group({
+        id: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(5),
+            Validators.maxLength(10),
+          ],
         ],
-      ],
-      description: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(5),
-          Validators.maxLength(200),
+        description: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(5),
+            Validators.maxLength(200),
+          ],
         ],
-      ],
-      date_release: ['', [Validators.required]],
-      name: [
-        '',
-        [
-          Validators.required,
-          Validators.minLength(5),
-          Validators.maxLength(100),
+        date_release: [new Date(), [Validators.required]],
+        name: [
+          '',
+          [
+            Validators.required,
+            Validators.minLength(5),
+            Validators.maxLength(100),
+          ],
         ],
-      ],
-      logo: ['', [Validators.required]],
-      date_revision: ['', [Validators.required]],
+        logo: ['', [Validators.required]],
+        date_revision: [new Date(), [Validators.required]],
+      });
+      resolve(true);
     });
   }
 
@@ -124,18 +143,34 @@ export class ProductRegisterComponent implements OnInit {
   }
 
   public saveProduct() {
-    this.productService
-      .postProduct(this.forma.value)
-      .pipe(
-        catchError((error) => {
-          console.error(error);
-          return [];
-        })
-      )
-      .subscribe(() => {
-        this.router.navigate(['/products-list']);
-      });
-    this.loadData();
+    debugger;
+    if (!this.isEditable) {
+      this.productService
+        .postProduct(this.forma.value)
+        .pipe(
+          catchError((error) => {
+            console.error(error);
+            return [];
+          })
+        )
+        .subscribe(() => {
+          this.router.navigate(['/products-list']);
+        });
+      this.loadData();
+    } else {
+      this.productService
+        .updateProduct(this.forma.value)
+        .pipe(
+          catchError((error) => {
+            console.error(error);
+            return [];
+          })
+        )
+        .subscribe(() => {
+          this.router.navigate(['products-list']);
+        });
+      this.loadData();
+    }
   }
 
   public loadData() {

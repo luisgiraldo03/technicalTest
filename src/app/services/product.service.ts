@@ -29,6 +29,12 @@ export class ProductService {
     });
   }
 
+  public updateProduct(body: Product): Observable<Product> {
+    return this.http.put<Product>(`${this.rootURL}/bp/products`, body, {
+      headers: this.headers,
+    });
+  }
+
   public verifyID(id: string): Observable<boolean> {
     return this.http.get<boolean>(
       `${this.rootURL}/bp/products/verification?id=${id}`

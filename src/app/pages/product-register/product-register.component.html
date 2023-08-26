@@ -59,7 +59,10 @@
       </div>
     </form>
     <div class="buttons">
-      <button class="button-reset" (click)="loadData()">Reiniciar</button>
+      <button *ngIf="!isEditable" class="button-reset" (click)="loadData()">
+        Reiniciar
+      </button>
+      <button *ngIf="isEditable" class="button-delete">Eliminar</button>
       <button
         type="submit"
         class="button-submit"
