@@ -1,5 +1,7 @@
 import { NgModule } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
+import { ReactiveFormsModule } from '@angular/forms';
+import { HttpClientModule } from '@angular/common/http';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -7,16 +9,14 @@ import { ProductsListComponent } from './pages/products-list/products-list.compo
 import { ProductRegisterComponent } from './pages/product-register/product-register.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    ProductsListComponent,
-    ProductRegisterComponent
-  ],
+  declarations: [AppComponent, ProductsListComponent, ProductRegisterComponent],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    ReactiveFormsModule,
+    HttpClientModule,
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [AppComponent],
 })
-export class AppModule { }
+export class AppModule {}

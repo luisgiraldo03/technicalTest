@@ -6,7 +6,7 @@
     <div class="search-input">
       <input type="text" placeholder="Search..." />
     </div>
-    <button>Aregar</button>
+    <button (click)="goAddProduct()">Aregar</button>
   </div>
   <table>
     <thead>
@@ -31,28 +31,12 @@
       </tr>
     </thead>
     <tbody>
-      <tr>
-        <td>Usuario 1</td>
-        <td>25</td>
-        <td>usuario1@example.com</td>
-        <td>Usuario 1</td>
-        <td>25</td>
-        <td><i class="fa fa-ellipsis-v edit" aria-hidden="true"></i></td>
-      </tr>
-      <tr>
-        <td>Usuario 1</td>
-        <td>25</td>
-        <td>usuario1@example.com</td>
-        <td>Usuario 1</td>
-        <td>25</td>
-        <td><i class="fa fa-ellipsis-v edit" aria-hidden="true"></i></td>
-      </tr>
-      <tr>
-        <td>Usuario 1</td>
-        <td>25</td>
-        <td>usuario1@example.com</td>
-        <td>Usuario 1</td>
-        <td>25</td>
+      <tr *ngFor="let product of products">
+        <td><img [src]="product.logo" class="img-logo" /></td>
+        <td>{{ product.name }}</td>
+        <td>{{ product.description }}</td>
+        <td>{{ product.date_release | date : "dd/MM/yyyy" }}</td>
+        <td>{{ product.date_revision | date : "dd/MM/yyyy" }}</td>
         <td><i class="fa fa-ellipsis-v edit" aria-hidden="true"></i></td>
       </tr>
       <!-- Agregar más filas aquí -->
@@ -60,12 +44,9 @@
   </table>
   <hr />
   <div class="footer">
-    <div class="select-input">5 Resultados</div>
-    <select id="frutas" name="frutas">
+    <div class="select-input">{{ products.length }} Resultados</div>
+    <select>
       <option value="manzana">5</option>
-      <option value="naranja">4</option>
-      <option value="banana">3</option>
-      <option value="uva">2</option>
     </select>
   </div>
 </div>

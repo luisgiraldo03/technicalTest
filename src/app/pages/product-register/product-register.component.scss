@@ -52,6 +52,7 @@ img{
     display: block;
     margin-bottom: 8px;
     font-weight: bold;
+    margin-top: 30px;
   }
   input {
     width: 100%;
@@ -59,14 +60,13 @@ img{
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    margin-bottom: 15px;
   }
 
   .buttons {
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-top: 20px;
+    margin-top: 60px;
   }
   
   .buttons button {
@@ -82,4 +82,14 @@ img{
   }
   .buttons .button-submit {
     background-color: #FFDD00;
+  }
+
+  // validations
+
+  .text-danger{
+    color: red;
+  }
+
+  .is-invalid{
+    border-color: red;
   }
