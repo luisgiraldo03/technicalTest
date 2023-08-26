@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, Subject } from 'rxjs';
 
 import { environment } from 'src/environments/environment';
 import { Product } from '../pages/models/Product';
@@ -40,5 +40,15 @@ export class ProductService {
     return this.http.delete<Product>(`${this.rootURL}/bp/products?id=${id}`, {
       headers: this.headers,
     });
+  }
+
+  private messageSubject = new Subject<string>();
+
+  sendMessage(data: any) {
+    this.messageSubject.next(data);
+  }
+
+  getMessage() {
+    return this.messageSubject.asObservable();
   }
 }

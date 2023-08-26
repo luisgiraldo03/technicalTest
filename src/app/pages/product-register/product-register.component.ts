@@ -1,29 +1,56 @@
-import { Component, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
-import { Router } from '@angular/router';
+import { Router, ActivatedRoute } from '@angular/router';
 
 import { ProductService } from 'src/app/services/product.service';
-import { catchError, Subscription } from 'rxjs';
+import { Subscription, catchError } from 'rxjs';
+import { Product } from '../models/Product';
+import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-product-register',
   templateUrl: './product-register.component.html',
   styleUrls: ['./product-register.component.scss'],
 })
-export class ProductRegisterComponent {
+export class ProductRegisterComponent implements OnInit {
   public forma!: FormGroup;
   public dateDisabled = true;
   public dateDefault: any;
   public prueba = 'hola';
+  public product!: Product;
+  public isEditable: Boolean = false;
+  subscription!: Subscription;
 
   constructor(
     private fb: FormBuilder,
     private productService: ProductService,
-    private router: Router
+    private router: Router,
+    private route: ActivatedRoute
   ) {
     this.buildForm();
     this.loadData();
+    // this.route.params.subscribe((product: any) => {
+    //   this.product = product;
+    //   this.isEditable = true;
+    //   console.log(this.product);
+
+    //   const d = new Date(this.product.date_release);
+    //   console.log(d);
+
+    //   if (this.isEditable) {
+    //     this.forma.setValue({
+    //       id: this.product.id,
+    //       description: this.product.description,
+    //       date_release: '',
+    //       name: this.product.name,
+    //       logo: this.product.logo,
+    //       date_revision: '',
+    //     });
+    //   }
+    // });
   }
+
+  ngOnInit() {}
 
   get notValidId() {
     return this.forma.get('id')?.invalid && this.forma.get('id')?.touched;
@@ -38,8 +65,8 @@ export class ProductRegisterComponent {
 
   get notValidDateRelease() {
     return (
-      this.forma.get('dateRelease')?.invalid &&
-      this.forma.get('dateRelease')?.touched
+      this.forma.get('date_release')?.invalid &&
+      this.forma.get('date_release')?.touched
     );
   }
 
@@ -81,21 +108,19 @@ export class ProductRegisterComponent {
       logo: ['', [Validators.required]],
       date_revision: ['', [Validators.required]],
     });
-    this.setYearDate();
   }
 
-  public setYearDate() {
-    this.forma.get('date_release')?.valueChanges.subscribe((value: string) => {
-      if (value !== '') {
-        this.dateDefault = new Date(value);
-        this.dateDefault.setDate(this.dateDefault.getDate() + 366);
-        this.forma
-          .get('date_revision')
-          ?.setValue(this.dateDefault.toISOString().split('T')[0]);
-      } else {
-        this.forma.get('date_revision')?.setValue('');
-      }
-    });
+  setDate(event: any) {
+    const valueDate = event.target.value;
+    if (valueDate !== '') {
+      this.dateDefault = new Date(valueDate);
+      this.dateDefault.setDate(this.dateDefault.getDate() + 366);
+      this.forma
+        .get('date_revision')
+        ?.setValue(this.dateDefault.toISOString().split('T')[0]);
+    } else {
+      this.forma.get('date_revision')?.setValue('');
+    }
   }
 
   public saveProduct() {

@@ -5,6 +5,7 @@ import { catchError, switchMap } from 'rxjs';
 
 import { ProductService } from 'src/app/services/product.service';
 import { Product } from '../models/Product';
+import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-products-list',
@@ -13,6 +14,7 @@ import { Product } from '../models/Product';
 })
 export class ProductsListComponent implements OnInit {
   public products: Product[] = [];
+  public productFormated!: Product;
   public filter!: FormGroup;
   public clicked: boolean = false;
 
@@ -67,11 +69,14 @@ export class ProductsListComponent implements OnInit {
     this.router.navigate(['/register']);
   }
 
-  public openOptions() {
-    if (this.clicked) {
-      this.clicked = false;
-    } else {
-      this.clicked = true;
-    }
+  public openOptions(product: Product) {
+    console.log(product);
+    this.productService.sendMessage(product);
+    this.router.navigate(['/register', product]);
+    // if (this.clicked) {
+    //   this.clicked = false;
+    // } else {
+    //   this.clicked = true;
+    // }
   }
 }

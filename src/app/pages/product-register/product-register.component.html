@@ -26,7 +26,11 @@
         >
 
         <label>Fecha Liberación</label>
-        <input type="date" formControlName="date_release" />
+        <input
+          type="date"
+          formControlName="date_release"
+          (change)="setDate($event)"
+        />
       </div>
       <div class="form-right">
         <label>Nombre</label>
