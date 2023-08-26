@@ -4,7 +4,9 @@
 <div class="container">
   <div class="search-bar">
     <div class="search-input">
-      <input type="text" placeholder="Search..." />
+      <form [formGroup]="filter">
+        <input type="text" placeholder="Search..." formControlName="filter" />
+      </form>
     </div>
     <button (click)="goAddProduct()">Aregar</button>
   </div>
@@ -31,7 +33,7 @@
       </tr>
     </thead>
     <tbody>
-      <tr *ngFor="let product of products">
+      <tr *ngFor="let product of filteredItems">
         <td><img [src]="product.logo" class="img-logo" /></td>
         <td>{{ product.name }}</td>
         <td>{{ product.description }}</td>

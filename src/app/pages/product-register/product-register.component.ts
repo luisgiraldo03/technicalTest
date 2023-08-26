@@ -10,12 +10,11 @@ import { catchError, Subscription } from 'rxjs';
   templateUrl: './product-register.component.html',
   styleUrls: ['./product-register.component.scss'],
 })
-export class ProductRegisterComponent implements OnDestroy {
+export class ProductRegisterComponent {
   public forma!: FormGroup;
   public dateDisabled = true;
   public dateDefault: any;
   public prueba = 'hola';
-  private subscription!: Subscription;
 
   constructor(
     private fb: FormBuilder,
@@ -100,7 +99,7 @@ export class ProductRegisterComponent implements OnDestroy {
   }
 
   public saveProduct() {
-    this.subscription = this.productService
+    this.productService
       .postProduct(this.forma.value)
       .pipe(
         catchError((error) => {
@@ -123,9 +122,5 @@ export class ProductRegisterComponent implements OnDestroy {
       logo: '',
       date_revision: '',
     });
-  }
-
-  ngOnDestroy(): void {
-    this.subscription.unsubscribe();
   }
 }

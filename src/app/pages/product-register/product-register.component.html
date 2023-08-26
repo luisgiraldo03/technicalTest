@@ -51,16 +51,11 @@
         >
 
         <label for="direccion">Fecha Revisión</label>
-        <input
-          type="date"
-          formControlName="date_revision"
-          [value]="prueba"
-          [disabled]="true"
-        />
+        <input type="date" formControlName="date_revision" />
       </div>
     </form>
     <div class="buttons">
-      <button class="button-reset">Reiniciar</button>
+      <button class="button-reset" (click)="loadData()">Reiniciar</button>
       <button
         type="submit"
         class="button-submit"
