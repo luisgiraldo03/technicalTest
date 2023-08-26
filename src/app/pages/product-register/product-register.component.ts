@@ -17,13 +17,13 @@ import { formatDate } from '@angular/common';
   templateUrl: './product-register.component.html',
   styleUrls: ['./product-register.component.scss'],
 })
-export class ProductRegisterComponent implements OnInit, AfterViewInit {
+export class ProductRegisterComponent implements OnInit {
   public forma!: FormGroup;
   public dateDisabled = true;
   public dateDefault: any;
   public product!: Product;
   public isEditable: Boolean = false;
-  subscription!: Subscription;
+  public isLoading: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -40,13 +40,12 @@ export class ProductRegisterComponent implements OnInit, AfterViewInit {
         }
         this.product = product;
         console.log(this.product);
-        this.forma.get('date_revision')?.disable();
 
         const d = new Date(this.product.date_release);
         console.log(d);
 
         if (this.isEditable) {
-          this.forma.get('id')?.disable();
+          //this.forma.get('id')?.disable();
           this.forma.setValue({
             id: this.product.id,
             description: this.product.description,
@@ -64,9 +63,13 @@ export class ProductRegisterComponent implements OnInit, AfterViewInit {
     });
   }
 
-  ngOnInit() {}
+  get dateReleaseOption() {
+    return this.forma.controls['date_revision'].disable();
+  }
 
-  ngAfterViewInit(): void {}
+  ngOnInit(): void {
+    // this.dateReleaseOption;
+  }
 
   get notValidId() {
     return this.forma.get('id')?.invalid && this.forma.get('id')?.touched;
@@ -125,6 +128,7 @@ export class ProductRegisterComponent implements OnInit, AfterViewInit {
         logo: ['', [Validators.required]],
         date_revision: [new Date(), [Validators.required]],
       });
+      //this.forma.get('date_revision')?.disable();
       resolve(true);
     });
   }
@@ -143,18 +147,19 @@ export class ProductRegisterComponent implements OnInit, AfterViewInit {
   }
 
   public saveProduct() {
-    debugger;
+    this.isLoading = true;
     if (!this.isEditable) {
       this.productService
         .postProduct(this.forma.value)
         .pipe(
           catchError((error) => {
-            console.error(error);
+            this.isLoading = false;
             return [];
           })
         )
         .subscribe(() => {
           this.router.navigate(['/products-list']);
+          this.isLoading = false;
         });
       this.loadData();
     } else {
@@ -162,12 +167,13 @@ export class ProductRegisterComponent implements OnInit, AfterViewInit {
         .updateProduct(this.forma.value)
         .pipe(
           catchError((error) => {
-            console.error(error);
+            this.isLoading = false;
             return [];
           })
         )
         .subscribe(() => {
           this.router.navigate(['products-list']);
+          this.isLoading = false;
         });
       this.loadData();
     }

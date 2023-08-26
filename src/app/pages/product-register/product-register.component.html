@@ -1,3 +1,6 @@
+<div *ngIf="isLoading" class="loading">
+  <div class="spinner"></div>
+</div>
 <div class="image-contanier">
   <img src="../../../assets/images/Banco_Pichincha_logo.svg.png" />
 </div>
@@ -48,7 +51,6 @@
           type="text"
           formControlName="logo"
           [class.is-invalid]="notValidLogo"
-          [disabled]="true"
         />
         <small *ngIf="notValidLogo" class="text-danger"
           >Este campo es requerido!</small

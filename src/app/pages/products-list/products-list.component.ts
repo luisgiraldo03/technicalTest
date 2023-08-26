@@ -16,6 +16,8 @@ export class ProductsListComponent implements OnInit {
   public productFormated!: Product;
   public filter!: FormGroup;
   public clicked: boolean = false;
+  public isLoading: boolean = false;
+  public defaultImageUrl: string = 'assets/images/Banco_Pichincha_logo.svg';
 
   constructor(
     private router: Router,
@@ -33,13 +35,15 @@ export class ProductsListComponent implements OnInit {
 
   ngOnInit() {
     this.getProducts();
+    console.log(this.defaultImageUrl);
   }
 
   public getProducts() {
+    this.isLoading = true;
     this.productService.getProducts().subscribe((response: any) => {
       // this.products = response.slice(0, 5);
       this.products = response;
-      console.log(this.products);
+      this.isLoading = false;
     });
   }
 

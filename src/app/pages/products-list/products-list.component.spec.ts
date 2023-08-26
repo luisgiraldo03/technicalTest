@@ -1,6 +1,22 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
+import {
+  ComponentFixture,
+  TestBed,
+  fakeAsync,
+  tick,
+} from '@angular/core/testing';
+import { RouterTestingModule } from '@angular/router/testing';
+import { of } from 'rxjs';
+
+import {
+  HttpClientTestingModule,
+  HttpTestingController,
+} from '@angular/common/http/testing';
+
+import { ProductService } from 'src/app/services/product.service';
 
 import { ProductsListComponent } from './products-list.component';
+import { HttpClientModule } from '@angular/common/http';
+import { ReactiveFormsModule } from '@angular/forms';
 
 describe('ProductsListComponent', () => {
   let component: ProductsListComponent;
@@ -8,9 +24,14 @@ describe('ProductsListComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ProductsListComponent ]
-    })
-    .compileComponents();
+      declarations: [ProductsListComponent],
+      imports: [
+        HttpClientModule,
+        RouterTestingModule,
+        ReactiveFormsModule,
+        HttpClientTestingModule,
+      ],
+    }).compileComponents();
   });
 
   beforeEach(() => {
@@ -19,7 +40,18 @@ describe('ProductsListComponent', () => {
     fixture.detectChanges();
   });
 
-  it('should create', () => {
+  it('should create the component', () => {
     expect(component).toBeTruthy();
+  });
+
+  it('should display table headers', () => {
+    fixture.detectChanges();
+    const headers = fixture.nativeElement.querySelectorAll('th');
+    expect(headers.length).toBe(5);
+    expect(headers[0].textContent).toContain('Logo');
+    expect(headers[1].textContent).toContain('Nombre del producto');
+    expect(headers[2].textContent).toContain('Descripción');
+    expect(headers[3].textContent).toContain('Fecha de liberación');
+    expect(headers[4].textContent).toContain('Fecha de reestructuración');
   });
 });
