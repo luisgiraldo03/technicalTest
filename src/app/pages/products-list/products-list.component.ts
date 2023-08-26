@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
+import { catchError, switchMap } from 'rxjs';
 
 import { ProductService } from 'src/app/services/product.service';
 import { Product } from '../models/Product';
@@ -13,6 +14,7 @@ import { Product } from '../models/Product';
 export class ProductsListComponent implements OnInit {
   public products: Product[] = [];
   public filter!: FormGroup;
+  public clicked: boolean = false;
 
   constructor(
     private router: Router,
@@ -29,6 +31,10 @@ export class ProductsListComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.getProducts();
+  }
+
+  public getProducts() {
     this.productService.getProducts().subscribe((response: any) => {
       this.products = response.slice(0, 5);
       console.log(this.products);
@@ -41,7 +47,31 @@ export class ProductsListComponent implements OnInit {
     );
   }
 
+  public deleteProduct(id: string) {
+    this.productService
+      .verifyID(id)
+      .pipe(
+        catchError((error) => {
+          console.error(error);
+          return [];
+        })
+      )
+      .subscribe((response) => {
+        if (response) {
+          this.productService.deleteProduct(id).subscribe();
+        }
+      });
+  }
+
   public goAddProduct() {
     this.router.navigate(['/register']);
+  }
+
+  public openOptions() {
+    if (this.clicked) {
+      this.clicked = false;
+    } else {
+      this.clicked = true;
+    }
   }
 }

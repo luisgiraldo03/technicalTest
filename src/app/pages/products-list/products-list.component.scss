@@ -86,6 +86,33 @@ img{
   .search-bar .search-input {
     flex: 1;
   }
+
+  .edit-button{
+    width: 90px;
+    height: 30px;
+    padding: 8px 15px;
+    background-color: #31CFF2;
+    color: black;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
+  .delete-button{
+    width: 90px;
+    height: 30px;
+    padding: 8px 15px;
+    background-color: red;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+
   .footer{
     margin-bottom: 10px;
     display: flex;

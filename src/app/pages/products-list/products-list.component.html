@@ -38,10 +38,23 @@
         <td>{{ product.name }}</td>
         <td>{{ product.description }}</td>
         <td>{{ product.date_release | date : "dd/MM/yyyy" }}</td>
-        <td>{{ product.date_revision | date : "dd/MM/yyyy" }}</td>
-        <td><i class="fa fa-ellipsis-v edit" aria-hidden="true"></i></td>
+        <td>
+          {{ product.date_revision | date : "dd/MM/yyyy" }}
+        </td>
+        <td *ngIf="clicked"><button class="edit-button">Editar</button></td>
+        <td *ngIf="clicked">
+          <button class="delete-button" (click)="deleteProduct(product.id)">
+            Eliminar
+          </button>
+        </td>
+        <td>
+          <i
+            class="fa fa-ellipsis-v edit"
+            aria-hidden="true"
+            (click)="openOptions()"
+          ></i>
+        </td>
       </tr>
-      <!-- Agregar más filas aquí -->
     </tbody>
   </table>
   <hr />

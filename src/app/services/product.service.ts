@@ -28,4 +28,17 @@ export class ProductService {
       headers: this.headers,
     });
   }
+
+  public verifyID(id: string): Observable<boolean> {
+    return this.http.get<boolean>(
+      `${this.rootURL}/bp/products/verification?id=${id}`
+    );
+  }
+
+  public deleteProduct(id: string): Observable<Product> {
+    debugger;
+    return this.http.delete<Product>(`${this.rootURL}/bp/products?id=${id}`, {
+      headers: this.headers,
+    });
+  }
 }
