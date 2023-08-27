@@ -46,14 +46,4 @@ export class ProductService {
       headers: this.headers,
     });
   }
-
-  private messageSubject = new Subject<string>();
-
-  sendMessage(data: any) {
-    this.messageSubject.next(data);
-  }
-
-  getMessage() {
-    return this.messageSubject.asObservable();
-  }
 }

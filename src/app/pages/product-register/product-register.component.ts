@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProductService } from 'src/app/services/product.service';
@@ -10,7 +10,7 @@ import { Product } from '../models/Product';
   templateUrl: './product-register.component.html',
   styleUrls: ['./product-register.component.scss'],
 })
-export class ProductRegisterComponent implements OnInit {
+export class ProductRegisterComponent {
   forma: FormGroup;
   dateDefault!: Date;
   product!: Product;
@@ -29,7 +29,6 @@ export class ProductRegisterComponent implements OnInit {
       this.product = product;
 
       if (this.isEditable) {
-        this.setDateDefaults();
         this.setFormValues();
       }
     });
@@ -46,13 +45,6 @@ export class ProductRegisterComponent implements OnInit {
     );
   }
 
-  get notValidDateRelease() {
-    return (
-      this.forma.get('date_release')?.invalid &&
-      this.forma.get('date_release')?.touched
-    );
-  }
-
   get notValidName() {
     return this.forma.get('name')?.invalid && this.forma.get('name')?.touched;
   }
@@ -60,8 +52,6 @@ export class ProductRegisterComponent implements OnInit {
   get notValidLogo() {
     return this.forma.get('logo')?.invalid && this.forma.get('logo')?.touched;
   }
-
-  ngOnInit(): void {}
 
   get control() {
     return this.forma.controls;
@@ -97,12 +87,6 @@ export class ProductRegisterComponent implements OnInit {
       logo: ['', [Validators.required]],
       date_revision: [new Date(), [Validators.required]],
     });
-  }
-
-  setDateDefaults() {
-    const releaseDate = new Date(this.product.date_release);
-    this.dateDefault = new Date(releaseDate);
-    this.dateDefault.setDate(this.dateDefault.getDate() + 366);
   }
 
   setFormValues() {
