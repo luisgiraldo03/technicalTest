@@ -143,3 +143,23 @@ select {
 .edit {
   cursor: pointer;
 }
+
+/* Estilos de la barra de paginación */
+.pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+}
+.pagination button {
+  padding: 8px 12px;
+  background-color: #def132;
+  color: black;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin: 0 5px;
+  transition: background-color 0.3s;
+}
+.pagination button.active {
+  background-color: #0056b3;
+}

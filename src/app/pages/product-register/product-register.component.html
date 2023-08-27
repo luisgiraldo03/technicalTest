@@ -1,10 +1,13 @@
 <app-spinner [open]="isLoading"></app-spinner>
+
 <div class="image-contanier">
   <img src="../../../assets/images/Banco_Pichincha_logo.svg.png" />
 </div>
+
 <div class="container">
   <h1>Formulario de Registro</h1>
   <hr />
+
   <div class="container-form">
     <form class="form" autocomplete="off" [formGroup]="forma">
       <div class="form-left">
@@ -33,6 +36,7 @@
           (change)="setDate($event)"
         />
       </div>
+
       <div class="form-right">
         <label>Nombre</label>
         <input
@@ -58,11 +62,18 @@
         <input type="date" formControlName="date_revision" />
       </div>
     </form>
+
     <div class="buttons">
       <button *ngIf="!isEditable" class="button-reset" (click)="loadData()">
         Reiniciar
       </button>
-      <button *ngIf="isEditable" class="button-delete">Eliminar</button>
+      <button
+        *ngIf="isEditable"
+        class="button-delete"
+        (click)="deleteProduct()"
+      >
+        Eliminar
+      </button>
       <button
         type="submit"
         class="button-submit"

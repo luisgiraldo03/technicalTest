@@ -42,7 +42,6 @@ export class ProductService {
   }
 
   public deleteProduct(id: string): Observable<Product> {
-    debugger;
     return this.http.delete<Product>(`${this.rootURL}/bp/products?id=${id}`, {
       headers: this.headers,
     });

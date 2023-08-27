@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
-import { catchError, switchMap } from 'rxjs';
 
 import { ProductService } from 'src/app/services/product.service';
 import { Product } from '../models/Product';
@@ -12,13 +11,12 @@ import { Product } from '../models/Product';
   styleUrls: ['./products-list.component.scss'],
 })
 export class ProductsListComponent implements OnInit {
-  public products: Product[] = [];
-  public productFormated!: Product;
-  public filter!: FormGroup;
-  public clicked: boolean = false;
-  public isLoading: boolean = false;
-  public defaultImage: string =
-    'https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Banco_Pichincha_logo.svg/2560px-Banco_Pichincha_logo.svg.png';
+  products: Product[] = [];
+  filter!: FormGroup;
+  isLoading = false;
+  pagedRecords: Product[] = [];
+  itemsPerPage = 5;
+  currentPage = 1;
 
   constructor(
     private router: Router,
@@ -30,57 +28,63 @@ export class ProductsListComponent implements OnInit {
     });
   }
 
-  get filterText() {
-    return this.filter.get('filter')?.value;
-  }
-
   ngOnInit() {
     this.getProducts();
   }
 
-  public getProducts() {
-    this.isLoading = true;
-    this.productService.getProducts().subscribe((response: any) => {
-      // this.products = response.slice(0, 5);
-      this.products = response;
-      this.isLoading = false;
-    });
+  get filterText() {
+    return this.filter.get('filter')?.value.toLowerCase();
   }
 
-  get filteredItems() {
-    return this.products.filter((item: Product) =>
-      item.name.toLowerCase().includes(this.filterText.toLowerCase())
+  get filteredRecords() {
+    return this.products.filter((record) =>
+      record.name.toLowerCase().includes(this.filterText)
     );
   }
 
-  public deleteProduct(id: string) {
-    this.productService
-      .verifyID(id)
-      .pipe(
-        catchError((error) => {
-          console.error(error);
-          return [];
-        })
-      )
-      .subscribe((response) => {
-        if (response) {
-          this.productService.deleteProduct(id).subscribe();
-        }
-      });
+  get totalItems() {
+    return this.filteredRecords.length;
   }
 
-  public goAddProduct() {
+  get totalPages() {
+    return Math.ceil(this.totalItems / this.itemsPerPage);
+  }
+
+  get pages() {
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  get paginatedFilteredRecords() {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    return this.filteredRecords.slice(
+      startIndex,
+      startIndex + this.itemsPerPage
+    );
+  }
+
+  goToPage(page: number) {
+    this.currentPage = page;
+  }
+
+  getProducts() {
+    this.isLoading = true;
+    this.productService.getProducts().subscribe(
+      (response: Product[]) => {
+        this.products = response;
+        this.isLoading = false;
+      },
+      (error) => {
+        console.error(error);
+        this.isLoading = false;
+      }
+    );
+  }
+
+  goAddProduct() {
     this.router.navigate(['/register']);
   }
 
-  public openOptions(product: Product) {
-    console.log(product);
-    // this.productService.sendMessage(product);
+  openOptions(product: Product) {
     this.router.navigate(['/register', product]);
-    // if (this.clicked) {
-    //   this.clicked = false;
-    // } else {
-    //   this.clicked = true;
-    // }
   }
 }

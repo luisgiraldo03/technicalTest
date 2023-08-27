@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProductService } from 'src/app/services/product.service';
-import { catchError } from 'rxjs';
+import { catchError, switchMap } from 'rxjs';
 import { Product } from '../models/Product';
 
 @Component({
@@ -11,11 +11,11 @@ import { Product } from '../models/Product';
   styleUrls: ['./product-register.component.scss'],
 })
 export class ProductRegisterComponent implements OnInit {
-  public forma: FormGroup;
-  public dateDefault!: Date;
-  public product!: Product;
-  public isEditable: boolean = false;
-  public isLoading: boolean = false;
+  forma: FormGroup;
+  dateDefault!: Date;
+  product!: Product;
+  isEditable: boolean = false;
+  isLoading: boolean = false;
 
   constructor(
     private fb: FormBuilder,
@@ -67,7 +67,7 @@ export class ProductRegisterComponent implements OnInit {
     return this.forma.controls;
   }
 
-  public buildForm(): FormGroup {
+  buildForm(): FormGroup {
     return this.fb.group({
       id: [
         '',
@@ -99,13 +99,13 @@ export class ProductRegisterComponent implements OnInit {
     });
   }
 
-  public setDateDefaults() {
+  setDateDefaults() {
     const releaseDate = new Date(this.product.date_release);
     this.dateDefault = new Date(releaseDate);
     this.dateDefault.setDate(this.dateDefault.getDate() + 366);
   }
 
-  public setFormValues() {
+  setFormValues() {
     const { id, description, date_release, name, logo, date_revision } =
       this.product;
     this.forma.setValue({
@@ -118,7 +118,7 @@ export class ProductRegisterComponent implements OnInit {
     });
   }
 
-  public setDate(event: any) {
+  setDate(event: any) {
     const valueDate = event.target.value;
     if (valueDate !== '') {
       this.dateDefault = new Date(valueDate);
@@ -131,7 +131,7 @@ export class ProductRegisterComponent implements OnInit {
     }
   }
 
-  public saveProduct() {
+  saveProduct() {
     this.isLoading = true;
     const productMethod = this.isEditable
       ? this.productService.updateProduct(this.forma.value)
@@ -144,7 +144,37 @@ export class ProductRegisterComponent implements OnInit {
     });
   }
 
-  public loadData() {
+  deleteProduct() {
+    const productId = this.forma.get('id')?.value;
+
+    this.productService
+      .verifyID(productId)
+      .pipe(
+        catchError((error) => {
+          console.error(error);
+          alert('ID no existe');
+          throw error;
+        }),
+        switchMap((response) => {
+          if (response) {
+            return this.productService.deleteProduct(productId).pipe(
+              catchError((error) => {
+                console.error(error);
+                alert('Error al eliminar el producto');
+                throw error;
+              })
+            );
+          } else {
+            return [];
+          }
+        })
+      )
+      .subscribe(() => {
+        alert('Eliminado');
+      });
+  }
+
+  loadData() {
     this.forma.reset();
   }
 }
