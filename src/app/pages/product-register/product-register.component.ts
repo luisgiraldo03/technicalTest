@@ -1,16 +1,9 @@
-import {
-  AfterContentInit,
-  AfterViewInit,
-  Component,
-  OnInit,
-} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
-
 import { ProductService } from 'src/app/services/product.service';
-import { Subscription, catchError } from 'rxjs';
+import { catchError } from 'rxjs';
 import { Product } from '../models/Product';
-import { formatDate } from '@angular/common';
 
 @Component({
   selector: 'app-product-register',
@@ -18,11 +11,10 @@ import { formatDate } from '@angular/common';
   styleUrls: ['./product-register.component.scss'],
 })
 export class ProductRegisterComponent implements OnInit {
-  public forma!: FormGroup;
-  public dateDisabled = true;
-  public dateDefault: any;
+  public forma: FormGroup;
+  public dateDefault!: Date;
   public product!: Product;
-  public isEditable: Boolean = false;
+  public isEditable: boolean = false;
   public isLoading: boolean = false;
 
   constructor(
@@ -31,42 +23,17 @@ export class ProductRegisterComponent implements OnInit {
     private router: Router,
     private route: ActivatedRoute
   ) {
-    this.buildForm().then(() => {
-      this.route.params.subscribe((product: any) => {
-        if (Object.keys(product).length === 0) {
-          this.isEditable = false;
-        } else {
-          this.isEditable = true;
-        }
-        this.product = product;
-        console.log(this.product);
+    this.forma = this.buildForm();
+    this.route.params.subscribe((product: any) => {
+      this.isEditable = Object.keys(product).length !== 0;
+      this.product = product;
 
-        const d = new Date(this.product.date_release);
-        console.log(d);
-
-        if (this.isEditable) {
-          this.forma.setValue({
-            id: this.product.id,
-            description: this.product.description,
-            date_release: new Date(this.product.date_release)
-              .toISOString()
-              .split('T')[0],
-            name: this.product.name,
-            logo: this.product.logo,
-            date_revision: new Date(this.product.date_revision)
-              .toISOString()
-              .split('T')[0],
-          });
-        }
-      });
+      if (this.isEditable) {
+        this.setDateDefaults();
+        this.setFormValues();
+      }
     });
   }
-
-  get dateReleaseOption() {
-    return this.forma.controls['date_revision'].disable();
-  }
-
-  ngOnInit(): void {}
 
   get notValidId() {
     return this.forma.get('id')?.invalid && this.forma.get('id')?.touched;
@@ -94,42 +61,64 @@ export class ProductRegisterComponent implements OnInit {
     return this.forma.get('logo')?.invalid && this.forma.get('logo')?.touched;
   }
 
-  public buildForm() {
-    return new Promise((resolve, reject) => {
-      this.forma = this.fb.group({
-        id: [
-          '',
-          [
-            Validators.required,
-            Validators.minLength(5),
-            Validators.maxLength(10),
-          ],
+  ngOnInit(): void {}
+
+  get control() {
+    return this.forma.controls;
+  }
+
+  public buildForm(): FormGroup {
+    return this.fb.group({
+      id: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(5),
+          Validators.maxLength(10),
         ],
-        description: [
-          '',
-          [
-            Validators.required,
-            Validators.minLength(5),
-            Validators.maxLength(200),
-          ],
+      ],
+      description: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(5),
+          Validators.maxLength(200),
         ],
-        date_release: [new Date(), [Validators.required]],
-        name: [
-          '',
-          [
-            Validators.required,
-            Validators.minLength(5),
-            Validators.maxLength(100),
-          ],
+      ],
+      date_release: [new Date(), [Validators.required]],
+      name: [
+        '',
+        [
+          Validators.required,
+          Validators.minLength(5),
+          Validators.maxLength(100),
         ],
-        logo: ['', [Validators.required]],
-        date_revision: [new Date(), [Validators.required]],
-      });
-      resolve(true);
+      ],
+      logo: ['', [Validators.required]],
+      date_revision: [new Date(), [Validators.required]],
     });
   }
 
-  setDate(event: any) {
+  public setDateDefaults() {
+    const releaseDate = new Date(this.product.date_release);
+    this.dateDefault = new Date(releaseDate);
+    this.dateDefault.setDate(this.dateDefault.getDate() + 366);
+  }
+
+  public setFormValues() {
+    const { id, description, date_release, name, logo, date_revision } =
+      this.product;
+    this.forma.setValue({
+      id,
+      description,
+      date_release: new Date(date_release).toISOString().split('T')[0],
+      name,
+      logo,
+      date_revision: new Date(date_revision).toISOString().split('T')[0],
+    });
+  }
+
+  public setDate(event: any) {
     const valueDate = event.target.value;
     if (valueDate !== '') {
       this.dateDefault = new Date(valueDate);
@@ -144,45 +133,18 @@ export class ProductRegisterComponent implements OnInit {
 
   public saveProduct() {
     this.isLoading = true;
-    if (!this.isEditable) {
-      this.productService
-        .postProduct(this.forma.value)
-        .pipe(
-          catchError((error) => {
-            this.isLoading = false;
-            return [];
-          })
-        )
-        .subscribe(() => {
-          this.router.navigate(['/products-list']);
-          this.isLoading = false;
-        });
+    const productMethod = this.isEditable
+      ? this.productService.updateProduct(this.forma.value)
+      : this.productService.postProduct(this.forma.value);
+
+    productMethod.pipe(catchError(() => [])).subscribe(() => {
+      this.router.navigate(['/products-list']);
+      this.isLoading = false;
       this.loadData();
-    } else {
-      this.productService
-        .updateProduct(this.forma.value)
-        .pipe(
-          catchError((error) => {
-            this.isLoading = false;
-            return [];
-          })
-        )
-        .subscribe(() => {
-          this.router.navigate(['products-list']);
-          this.isLoading = false;
-        });
-      this.loadData();
-    }
+    });
   }
 
   public loadData() {
-    this.forma.reset({
-      id: '',
-      description: '',
-      date_release: '',
-      name: '',
-      logo: '',
-      date_revision: '',
-    });
+    this.forma.reset();
   }
 }

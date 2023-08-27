@@ -143,25 +143,3 @@ select {
 .edit {
   cursor: pointer;
 }
-
-/* Estilos para el componente de carga */
-.loading {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  height: 30px;
-}
-
-.spinner {
-  width: 10px;
-  height: 10px;
-  border: 4px solid rgba(0, 0, 0, 0.1);
-  border-left-color: #000;
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
