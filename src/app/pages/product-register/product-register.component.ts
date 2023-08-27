@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router, ActivatedRoute } from '@angular/router';
 import { ProductService } from 'src/app/services/product.service';
-import { catchError, switchMap } from 'rxjs';
+import { catchError, switchMap, tap } from 'rxjs';
 import { Product } from '../models/Product';
 
 @Component({
@@ -16,6 +16,8 @@ export class ProductRegisterComponent {
   product!: Product;
   isEditable: boolean = false;
   isLoading: boolean = false;
+  isDisabled: boolean = false;
+  defaultImage = '../../../assets/images/Banco_Pichincha_logo.svg.png';
 
   constructor(
     private fb: FormBuilder,
@@ -63,7 +65,7 @@ export class ProductRegisterComponent {
         '',
         [
           Validators.required,
-          Validators.minLength(5),
+          Validators.minLength(3),
           Validators.maxLength(10),
         ],
       ],
@@ -121,11 +123,20 @@ export class ProductRegisterComponent {
       ? this.productService.updateProduct(this.forma.value)
       : this.productService.postProduct(this.forma.value);
 
-    productMethod.pipe(catchError(() => [])).subscribe(() => {
-      this.router.navigate(['/products-list']);
-      this.isLoading = false;
-      this.loadData();
-    });
+    productMethod
+      .pipe(
+        tap(() => {
+          this.router.navigate(['/products-list']);
+          this.loadData();
+        }),
+        catchError(() => {
+          alert('Algo salío mal');
+          return [];
+        })
+      )
+      .subscribe(() => {
+        this.isLoading = false;
+      });
   }
 
   deleteProduct() {
@@ -135,7 +146,6 @@ export class ProductRegisterComponent {
       .verifyID(productId)
       .pipe(
         catchError((error) => {
-          console.error(error);
           alert('ID no existe');
           throw error;
         }),
@@ -143,7 +153,6 @@ export class ProductRegisterComponent {
           if (response) {
             return this.productService.deleteProduct(productId).pipe(
               catchError((error) => {
-                console.error(error);
                 alert('Error al eliminar el producto');
                 throw error;
               })

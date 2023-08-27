@@ -16,6 +16,7 @@
           type="text"
           formControlName="id"
           [class.is-invalid]="notValidId"
+          [readonly]="isEditable"
         />
         <small *ngIf="notValidId" class="text-danger">ID no válido</small>
 
@@ -59,7 +60,11 @@
         >
 
         <label for="direccion">Fecha Revisión</label>
-        <input type="date" formControlName="date_revision" />
+        <input
+          type="date"
+          formControlName="date_revision"
+          [attr.disabled]="true"
+        />
       </div>
     </form>
 
@@ -85,3 +90,14 @@
     </div>
   </div>
 </div>
+
+<hr />
+<pre>
+  Estado del formulario: {{forma.valid}}
+  <br>
+  Status: {{forma.status}}
+</pre>
+
+<pre>
+  {{ forma.value | json }}
+</pre>

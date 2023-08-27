@@ -17,6 +17,8 @@ export class ProductsListComponent implements OnInit {
   pagedRecords: Product[] = [];
   itemsPerPage = 5;
   currentPage = 1;
+  defaultImage!: String;
+  isBrokenImg: boolean = false;
 
   constructor(
     private router: Router,
@@ -30,6 +32,11 @@ export class ProductsListComponent implements OnInit {
 
   ngOnInit() {
     this.getProducts();
+  }
+
+  changetoDefault(product: Product) {
+    product.logo =
+      'https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Banco_Pichincha_logo.svg/2560px-Banco_Pichincha_logo.svg.png';
   }
 
   get filterText() {
@@ -73,8 +80,7 @@ export class ProductsListComponent implements OnInit {
         this.products = response;
         this.isLoading = false;
       },
-      (error) => {
-        console.error(error);
+      () => {
         this.isLoading = false;
       }
     );

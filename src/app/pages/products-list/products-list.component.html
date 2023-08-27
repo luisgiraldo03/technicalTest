@@ -37,7 +37,11 @@
     <tbody>
       <tr *ngFor="let product of paginatedFilteredRecords">
         <td>
-          <img [src]="product.logo" class="img-logo" />
+          <img
+            [src]="product.logo"
+            class="img-logo"
+            (error)="changetoDefault(product)"
+          />
         </td>
         <td>{{ product.name }}</td>
         <td>{{ product.description }}</td>
