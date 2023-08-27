@@ -39,11 +39,7 @@
     <tbody>
       <tr *ngFor="let product of filteredItems">
         <td>
-          <img
-            [src]="product.logo"
-            class="img-logo"
-            (error)="(defaultImageUrl)"
-          />
+          <img [src]="product.logo || defaultImage" class="img-logo" />
         </td>
         <td>{{ product.name }}</td>
         <td>{{ product.description }}</td>

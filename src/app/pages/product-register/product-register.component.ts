@@ -45,7 +45,6 @@ export class ProductRegisterComponent implements OnInit {
         console.log(d);
 
         if (this.isEditable) {
-          //this.forma.get('id')?.disable();
           this.forma.setValue({
             id: this.product.id,
             description: this.product.description,
@@ -67,9 +66,7 @@ export class ProductRegisterComponent implements OnInit {
     return this.forma.controls['date_revision'].disable();
   }
 
-  ngOnInit(): void {
-    // this.dateReleaseOption;
-  }
+  ngOnInit(): void {}
 
   get notValidId() {
     return this.forma.get('id')?.invalid && this.forma.get('id')?.touched;
@@ -128,7 +125,6 @@ export class ProductRegisterComponent implements OnInit {
         logo: ['', [Validators.required]],
         date_revision: [new Date(), [Validators.required]],
       });
-      //this.forma.get('date_revision')?.disable();
       resolve(true);
     });
   }

@@ -17,7 +17,8 @@ export class ProductsListComponent implements OnInit {
   public filter!: FormGroup;
   public clicked: boolean = false;
   public isLoading: boolean = false;
-  public defaultImageUrl: string = 'assets/images/Banco_Pichincha_logo.svg';
+  public defaultImage: string =
+    'https://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Banco_Pichincha_logo.svg/2560px-Banco_Pichincha_logo.svg.png';
 
   constructor(
     private router: Router,
@@ -35,7 +36,6 @@ export class ProductsListComponent implements OnInit {
 
   ngOnInit() {
     this.getProducts();
-    console.log(this.defaultImageUrl);
   }
 
   public getProducts() {
